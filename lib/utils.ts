@@ -229,3 +229,10 @@ export function getDocumentTimestampByIndex(
 
   return documents[index].createdAt;
 }
+
+export function isWhitelistedUser(email: string | null | undefined): boolean {
+  if (!email) return false;
+  
+  const whitelistedUsers = process.env.WHITELISTED_USERS?.split(',') || [];
+  return whitelistedUsers.includes(email);
+}
