@@ -7,7 +7,7 @@ import { useWindowSize } from 'usehooks-ts';
 import { ModelSelector } from '@/components/model-selector';
 import { SidebarToggle } from '@/components/sidebar-toggle';
 import { Button } from '@/components/ui/button';
-import { PlusIcon } from './icons';
+import { PlusIcon, SidebarLeftIcon } from './icons';
 import { useSidebar } from './ui/sidebar';
 import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
@@ -25,48 +25,67 @@ function PureChatHeader({
   isReadonly: boolean;
 }) {
   const router = useRouter();
-  const { open } = useSidebar();
-
+  const { open, toggleSidebar } = useSidebar();
   const { width: windowWidth } = useWindowSize();
 
   return (
-    <header className="flex sticky top-0 bg-background py-1.5 items-center px-2 md:px-2 gap-2">
-      <SidebarToggle />
-
-      {(!open || windowWidth < 768) && (
+    <>
+      {/* Fixed position sidebar toggle button that stays in the same place */}
+      <div className="fixed left-2 top-1.5 z-50">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
+              onClick={toggleSidebar}
               variant="outline"
-              className="order-2 md:order-1 md:px-2 px-2 md:h-fit ml-auto md:ml-0"
-              onClick={() => {
-                router.push('/');
-                router.refresh();
-              }}
+              className="md:px-2 md:h-fit"
+              aria-label="Toggle Sidebar"
             >
-              <PlusIcon />
-              <span className="md:sr-only">New Chat</span>
+              <div className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}>
+                <SidebarLeftIcon size={16} />
+              </div>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>New Chat</TooltipContent>
+          <TooltipContent align="start">Toggle Sidebar (Ctrl+B)</TooltipContent>
         </Tooltip>
-      )}
+      </div>
 
-      {!isReadonly && (
-        <ModelSelector
-          selectedModelId={selectedModelId}
-          className="order-1 md:order-2"
-        />
-      )}
+      <header className="flex sticky top-0 bg-background py-1.5 items-center gap-2 pl-14 pr-2">
+        {/* New Chat button */}
+        {(!open || windowWidth < 768) && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                className="md:px-2 md:h-fit"
+                onClick={() => {
+                  router.push('/');
+                  router.refresh();
+                }}
+              >
+                <PlusIcon />
+                <span className="md:sr-only">New Chat</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>New Chat</TooltipContent>
+          </Tooltip>
+        )}
 
-      {!isReadonly && (
-        <VisibilitySelector
-          chatId={chatId}
-          selectedVisibilityType={selectedVisibilityType}
-          className="order-1 md:order-3"
-        />
-      )}
-    </header>
+        {!isReadonly && (
+          <ModelSelector
+            selectedModelId={selectedModelId}
+            className="md:ml-0"
+          />
+        )}
+
+        {!isReadonly && (
+          <VisibilitySelector
+            chatId={chatId}
+            selectedVisibilityType={selectedVisibilityType}
+            className="ml-auto"
+          />
+        )}
+      </header>
+    </>
   );
 }
 
