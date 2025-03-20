@@ -13,7 +13,7 @@ import { Button } from './ui/button';
 export function SidebarToggle({
   className,
 }: ComponentProps<typeof SidebarTrigger>) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, state } = useSidebar();
 
   return (
     <Tooltip>
@@ -21,9 +21,12 @@ export function SidebarToggle({
         <Button
           onClick={toggleSidebar}
           variant="outline"
-          className="md:px-2 md:h-fit"
+          className="md:px-2 md:h-fit z-20"
+          aria-label="Toggle Sidebar"
         >
-          <SidebarLeftIcon size={16} />
+          <div className={state === 'collapsed' ? '' : 'rotate-180'}>
+            <SidebarLeftIcon size={16} />
+          </div>
         </Button>
       </TooltipTrigger>
       <TooltipContent align="start">Toggle Sidebar</TooltipContent>
