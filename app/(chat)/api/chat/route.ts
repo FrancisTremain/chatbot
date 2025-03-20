@@ -35,16 +35,19 @@ export async function POST(request: Request) {
       id,
       messages,
       selectedChatModel,
+      previousResponseId,
     }: {
       id: string;
       messages: Array<Message>;
       selectedChatModel: string;
+      previousResponseId?: string;
     } = await request.json();
 
     console.log('API received request:', {
       id,
       messageCount: messages?.length,
       selectedChatModel,
+      previousResponseId,
       messages: messages.map(m => ({
         role: m.role,
         content: m.content,
@@ -118,6 +121,13 @@ export async function POST(request: Request) {
                 dataStream,
               }),
             },
+            providerOptions: previousResponseId
+              ? {
+                  openai: {
+                    previousResponseId: previousResponseId,
+                  },
+                }
+              : undefined,
             onFinish: async ({ response, reasoning }) => {
               if (session.user?.id) {
                 try {

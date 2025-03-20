@@ -14,6 +14,11 @@ import { VisibilityType } from './visibility-selector';
 import { useArtifactSelector } from '@/hooks/use-artifact';
 import { toast } from 'sonner';
 
+// Define the response type for OpenAI Responses API
+interface ResponseMetadata {
+  responseId: string;
+}
+
 export function Chat({
   id,
   initialMessages,
@@ -41,7 +46,10 @@ export function Chat({
     reload,
   } = useChat({
     id,
-    body: { id, selectedChatModel: selectedChatModel },
+    body: { 
+      id, 
+      selectedChatModel: selectedChatModel 
+    },
     initialMessages,
     experimental_throttle: 100,
     sendExtraMessageFields: true,
@@ -58,6 +66,13 @@ export function Chat({
       });
       toast.error('An error occured, please try again!');
     },
+    // Pass the previous response ID to enable OpenAI Responses API persistence
+    // @ts-expect-error - experimental_persistence is not in the type definition yet
+    experimental_persistence: {
+      enabled: true,
+      getResponseId: (response: { metadata?: { openai?: ResponseMetadata }}) => 
+        response.metadata?.openai?.responseId,
+    }
   });
 
   const { data: votes } = useSWR<Array<Vote>>(

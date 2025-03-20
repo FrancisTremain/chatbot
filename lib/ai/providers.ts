@@ -25,8 +25,8 @@ export const myProvider = isTestEnvironment
     })
   : customProvider({
       languageModels: {
-        'chat-model-small': openai('gpt-3.5-turbo'),
-        'chat-model-large': openai('gpt-4'),
+        'chat-model-small': openai.responses('gpt-3.5-turbo'),
+        'chat-model-large': openai.responses('gpt-4'),
         'chat-model-reasoning': wrapLanguageModel({
           model: fireworks('accounts/fireworks/models/deepseek-r1'),
           middleware: extractReasoningMiddleware({ tagName: 'think' }),
